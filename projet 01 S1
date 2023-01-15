@@ -1,0 +1,109 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+struct books {
+   char bookname[50];
+   int isbn;
+   char authorname[50];
+   char pubdate[10];
+   char pubhouse;
+}books;
+      // home page
+      FILE *bs;
+int main(){
+    int choice;
+    while(1) {
+ // home page
+system("cls");
+printf("1.Add Book\n");
+printf("2.Books List\n");
+printf("3.Remove Book\n");
+printf("0.Exit\n\n");
+printf("----------");
+printf("Enter your choice:-------------------------------------------------------------------------------------------- ");
+printf("\n : ");
+scanf("%d", &choice);
+            // choix
+switch(choice){
+case 0:
+exit(0);
+case 1:
+addBook();
+    break;
+case 2:
+booksList();
+    break;
+case 3:
+rm();
+    break;
+default:
+    printf("choices are 1 . 2 . 3 . 0");
+}
+    printf("\t\t\n Press Any Key To Continue...");
+    getch();
+    }
+    return 0;
+}
+void addBook(){       // add a book function
+        bs = fopen("books.txt", "a");        // to open and save the informations in a txt document type
+printf("Enter book ISBN code : ");
+scanf("%d", &books.isbn);
+printf("Enter book name: ");
+fflush(stdin);              // it flashes the enter key *can be replaced by the function getchar()*
+gets(books.bookname);        // gets() is a better replacement for scanf
+printf("Enter author name: ");
+fflush(stdin);
+gets(books.authorname);
+printf("enter the publishing date: ");
+fflush(stdin);
+gets(books.pubdate);
+printf("enter the publishing house: ");
+fflush(stdin);
+scanf("%s", &books.pubhouse);
+printf("Book Added Successfully");
+fwrite(&books, sizeof(books), 1, bs);           // fwrite write in the txt document * fwrite_const_size_file *
+fclose(bs);
+}        // the book list function
+    void booksList(){
+system("cls");                          // this command clears the screen
+printf("Remove Books\n");
+printf("Available Books are \n\n");
+printf("%s\t\t\t %s\t\t\t %s\t\t\t %s\t\t %s\n", "Book id", "Book Name", "Author", "pubdate", "pubhouse");
+bs = fopen("books.txt", "r");
+    while(fread(&books, sizeof(books), 1, bs) == 1){     // fread show the content of the txt file in whitch we are saving our data
+                                                        //  repeat printing this 'printf' every time fread finds what to read in the txt file
+        printf("\n%d\t\t\t %s\t\t\t\t %s\t\t\t %s\t\t %s\n", books.isbn, books.bookname, books.authorname, books.pubdate, books.pubhouse);
+    }
+    fclose(bs);
+}             //rm  book
+// here I'm creating a temporary text file and copy all the data in it except the book which the user entered his ISBN code then renaming it like the original after deleting it
+    void rm(){
+int isbn, found=0;
+system("cls");           // this command clears the screen
+printf("Remove Books\n");
+printf("Enter Book ISBN code to remove it: ");
+scanf("%d", &isbn);
+FILE *bk;
+bs = fopen("books.txt", "r");              // the permission read (r) read the books text file content
+bk = fopen("temp.txt", "w");               // here we create a file in which we can write the other file content in
+    while(fread(&books, sizeof(books), 1, bs) == 1){     // while the function fread is true
+if(isbn == books.isbn){          // the ISBN code entered by the user has matched an ISBN code available in the data storage file
+found=1;
+}
+else{ fwrite(&books, sizeof(books), 1, bk);       //here we copy the content of the first file into  second file not except the inf of the book which we wanted to remove
+}
+}
+    if(found==1){
+printf("\n\nDeleted Successfully.");
+}
+else{
+printf("\n\n Book Not Found !");
+}
+fclose(bs);
+fclose(bk);
+remove("books.txt");                     // here we remove the first text file
+rename("temp.txt", "books.txt");         // and here we rename the second file to (books)
+
+}
+    fclose(bs);
